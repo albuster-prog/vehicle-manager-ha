@@ -1,0 +1,76 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Adaugă vehicul",
+        "description": "Introdu detaliile vehiculului tău.",
+        "data": {
+          "vehicle_name": "Nume vehicul",
+          "vehicle_type": "Tip vehicul",
+          "license_plate": "Număr înmatriculare",
+          "vin": "VIN (opțional)",
+          "odometer_entity": "Senzor odometru (opțional)",
+          "unit": "Unitate distanță",
+          "warning_days": "Zile avertizare înainte de expirare"
+        }
+      },
+      "license": {
+        "title": "Licență Pro (opțional)",
+        "description": "Introdu cheia de licență Pro pentru a debloca toți senzorii de mentenanță.\n\nObține licență lifetime Pro la: {bmac_url}\nFormat: {format}\n\nLasă gol pentru tier Free (doar documente legale, 1 vehicul).",
+        "data": { "license_key": "Cheie licență" }
+      }
+    },
+    "abort": {
+      "free_tier_limit": "Tier Free: maxim 1 vehicul. Fă upgrade la Pro pentru nelimitat.",
+      "already_configured": "Acest vehicul este deja configurat."
+    },
+    "error": {
+      "invalid_license_format": "Format cheie invalid. Așteptat: VM-XXXX-XXXX-XXXX-XXXX"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opțiuni Vehicle Manager",
+        "menu_options": {
+          "update_counter": "Actualizează contor mentenanță",
+          "update_legal": "Actualizează document legal",
+          "update_license": "Actualizează cheie licență"
+        }
+      },
+      "update_legal": {
+        "title": "Actualizează document legal",
+        "data": {
+          "doc_key": "Document",
+          "start_date": "Data început",
+          "expiry_date": "Data expirare"
+        }
+      },
+      "update_counter": {
+        "title": "Actualizează contor mentenanță",
+        "data": {
+          "counter_key": "Cheie contor (ex: oil_change)",
+          "last_done_date": "Data ultimei intervenții",
+          "last_done_km": "Km la ultima intervenție"
+        }
+      },
+      "update_license": {
+        "title": "Actualizează cheie licență",
+        "data": { "license_key": "Cheie licență" }
+      }
+    },
+    "error": {
+      "invalid_license_format": "Format cheie invalid. Așteptat: VM-XXXX-XXXX-XXXX-XXXX"
+    }
+  },
+  "state": {
+    "sensor": {
+      "_": {
+        "ok": "OK",
+        "warning": "Atenție",
+        "expired": "Expirat",
+        "unknown": "Neconfigurat"
+      }
+    }
+  }
+}
