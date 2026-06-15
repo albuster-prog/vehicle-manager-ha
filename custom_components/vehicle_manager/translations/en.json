@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Add Vehicle",
-        "description": "Enter your vehicle details.",
+        "description": "Enter the details of your vehicle.",
         "data": {
           "vehicle_name": "Vehicle Name",
           "vehicle_type": "Vehicle Type",
@@ -11,21 +11,23 @@
           "vin": "VIN (optional)",
           "odometer_entity": "Odometer Sensor (optional)",
           "unit": "Distance Unit",
-          "warning_days": "Warning Days before expiry"
+          "warning_days": "Warning Days Before Expiry"
         }
       },
       "license": {
         "title": "Pro License (optional)",
-        "description": "Enter your Pro license key to unlock all maintenance counters.\n\nGet lifetime Pro at: {bmac_url}\nFormat: {format}\n\nLeave blank for Free tier (legal docs only, 1 vehicle).",
-        "data": { "license_key": "License Key" }
+        "description": "Enter your Pro license key to unlock all maintenance counters and unlimited vehicles.\n\nGet a lifetime license at [{bmac_url}]({bmac_url})\n\nFormat: {format}",
+        "data": {
+          "license_key": "License Key (leave blank for Free tier)"
+        }
       }
     },
-    "abort": {
-      "free_tier_limit": "Free tier: max 1 vehicle. Upgrade to Pro for unlimited.",
-      "already_configured": "This vehicle is already configured."
-    },
     "error": {
-      "invalid_license_format": "Invalid key format. Expected: VM-XXXX-XXXX-XXXX-XXXX"
+      "invalid_license_format": "Invalid license key format. Expected: VM-XXXX-XXXX-XXXX-XXXX"
+    },
+    "abort": {
+      "free_tier_limit": "Free tier supports only 1 vehicle. Upgrade to Pro for unlimited vehicles.",
+      "already_configured": "This vehicle is already configured."
     }
   },
   "options": {
@@ -35,7 +37,16 @@
         "menu_options": {
           "update_counter": "Update Maintenance Counter",
           "update_legal": "Update Legal Document",
-          "update_license": "Update License Key"
+          "update_license": "Update License Key",
+          "notification_settings": "Notification Settings"
+        }
+      },
+      "notification_settings": {
+        "title": "Notification Settings",
+        "description": "Configure when Vehicle Manager sends you alerts.\n\nCurrently dismissed alerts: **{dismissed_count}**\n\nEnable or disable notifications below. If you reset dismissed alerts, all active warnings will notify you again.",
+        "data": {
+          "notifications_enabled": "Enable expiry notifications",
+          "reset_dismissed": "Reset dismissed alerts (re-enable all)"
         }
       },
       "update_legal": {
@@ -56,21 +67,13 @@
       },
       "update_license": {
         "title": "Update License Key",
-        "data": { "license_key": "License Key" }
+        "data": {
+          "license_key": "License Key"
+        }
       }
     },
     "error": {
-      "invalid_license_format": "Invalid key format. Expected: VM-XXXX-XXXX-XXXX-XXXX"
-    }
-  },
-  "state": {
-    "sensor": {
-      "_": {
-        "ok": "OK",
-        "warning": "Warning",
-        "expired": "Expired",
-        "unknown": "Not Configured"
-      }
+      "invalid_license_format": "Invalid license key format. Expected: VM-XXXX-XXXX-XXXX-XXXX"
     }
   }
 }
