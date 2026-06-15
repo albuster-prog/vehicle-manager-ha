@@ -2,75 +2,78 @@
   "config": {
     "step": {
       "user": {
-        "title": "Adaugă vehicul",
-        "description": "Introdu detaliile vehiculului tău.",
+        "title": "Adauga Vehicul",
+        "description": "Introdu detaliile vehiculului tau.",
         "data": {
-          "vehicle_name": "Nume vehicul",
-          "vehicle_type": "Tip vehicul",
-          "license_plate": "Număr înmatriculare",
-          "vin": "VIN (opțional)",
-          "odometer_entity": "Senzor odometru (opțional)",
-          "unit": "Unitate distanță",
-          "warning_days": "Zile avertizare înainte de expirare"
+          "vehicle_name": "Nume Vehicul",
+          "vehicle_type": "Tip Vehicul",
+          "license_plate": "Numar Inmatriculare",
+          "vin": "Serie Sasiu VIN (optional)",
+          "odometer_entity": "Senzor Kilometraj (optional)",
+          "unit": "Unitate Distanta",
+          "warning_days": "Zile Avertizare Inainte de Expirare"
         }
       },
       "license": {
-        "title": "Licență Pro (opțional)",
-        "description": "Introdu cheia de licență Pro pentru a debloca toți senzorii de mentenanță.\n\nObține licență lifetime Pro la: {bmac_url}\nFormat: {format}\n\nLasă gol pentru tier Free (doar documente legale, 1 vehicul).",
-        "data": { "license_key": "Cheie licență" }
+        "title": "Licenta Pro (optional)",
+        "description": "Introdu cheia de licenta Pro pentru a debloca toti contorii de mentenanta si vehicule nelimitate.\n\nObtine o licenta lifetime la [{bmac_url}]({bmac_url})\n\nFormat: {format}",
+        "data": {
+          "license_key": "Cheie Licenta (lasa gol pentru tier Gratuit)"
+        }
       }
     },
-    "abort": {
-      "free_tier_limit": "Tier Free: maxim 1 vehicul. Fă upgrade la Pro pentru nelimitat.",
-      "already_configured": "Acest vehicul este deja configurat."
-    },
     "error": {
-      "invalid_license_format": "Format cheie invalid. Așteptat: VM-XXXX-XXXX-XXXX-XXXX"
+      "invalid_license_format": "Format cheie licenta invalid. Asteptat: VM-XXXX-XXXX-XXXX-XXXX"
+    },
+    "abort": {
+      "free_tier_limit": "Tier-ul gratuit suporta doar 1 vehicul. Upgradeza la Pro pentru vehicule nelimitate.",
+      "already_configured": "Acest vehicul este deja configurat."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Opțiuni Vehicle Manager",
+        "title": "Optiuni Vehicle Manager",
         "menu_options": {
-          "update_counter": "Actualizează contor mentenanță",
-          "update_legal": "Actualizează document legal",
-          "update_license": "Actualizează cheie licență"
+          "update_counter": "Actualizeaza Contor Mentenanta",
+          "update_legal": "Actualizeaza Document Legal",
+          "update_license": "Actualizeaza Cheie Licenta",
+          "notification_settings": "Setari Notificari"
+        }
+      },
+      "notification_settings": {
+        "title": "Setari Notificari",
+        "description": "Configureaza cand Vehicle Manager iti trimite alerte.\n\nAlerte respinse in prezent: **{dismissed_count}**\n\nActiveaza sau dezactiveaza notificarile mai jos. Daca resetezi alertele respinse, toate avertizarile active te vor notifica din nou.",
+        "data": {
+          "notifications_enabled": "Activeaza notificari expirare",
+          "reset_dismissed": "Reseteaza alertele respinse (reactiveaza toate)"
         }
       },
       "update_legal": {
-        "title": "Actualizează document legal",
+        "title": "Actualizeaza Document Legal",
         "data": {
           "doc_key": "Document",
-          "start_date": "Data început",
-          "expiry_date": "Data expirare"
+          "start_date": "Data Inceput",
+          "expiry_date": "Data Expirare"
         }
       },
       "update_counter": {
-        "title": "Actualizează contor mentenanță",
+        "title": "Actualizeaza Contor Mentenanta",
         "data": {
-          "counter_key": "Cheie contor (ex: oil_change)",
-          "last_done_date": "Data ultimei intervenții",
-          "last_done_km": "Km la ultima intervenție"
+          "counter_key": "Cheie Contor",
+          "last_done_date": "Data Ultima Efectuare",
+          "last_done_km": "Kilometraj Ultima Efectuare"
         }
       },
       "update_license": {
-        "title": "Actualizează cheie licență",
-        "data": { "license_key": "Cheie licență" }
+        "title": "Actualizeaza Cheie Licenta",
+        "data": {
+          "license_key": "Cheie Licenta"
+        }
       }
     },
     "error": {
-      "invalid_license_format": "Format cheie invalid. Așteptat: VM-XXXX-XXXX-XXXX-XXXX"
-    }
-  },
-  "state": {
-    "sensor": {
-      "_": {
-        "ok": "OK",
-        "warning": "Atenție",
-        "expired": "Expirat",
-        "unknown": "Neconfigurat"
-      }
+      "invalid_license_format": "Format cheie licenta invalid. Asteptat: VM-XXXX-XXXX-XXXX-XXXX"
     }
   }
 }
