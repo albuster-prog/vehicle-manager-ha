@@ -11,11 +11,12 @@ from .const import (
     VEHICLE_TYPES,
     CONF_VEHICLE_NAME, CONF_VEHICLE_TYPE, CONF_LICENSE_PLATE,
     CONF_VIN, CONF_ODOMETER_ENTITY, CONF_UNIT, CONF_LICENSE_KEY, CONF_WARNING_DAYS,
+    CONF_NOTIFICATIONS_ENABLED, CONF_DISMISSED_NOTIFICATIONS,
+    NOTIFICATIONS_ENABLED_DEFAULT,
     UNIT_KM, UNIT_MILES, WARNING_DAYS_DEFAULT,
     FREE_MAX_VEHICLES,
 )
 from .license import get_license_tier, validate_license_format
-
 
 class VehicleManagerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle the Vehicle Manager config flow."""
@@ -34,12 +35,11 @@ class VehicleManagerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         existing = self._async_current_entries()
         license_key = None
         if existing:
-            # Use the license from the first entry (shared)
             license_key = existing[0].data.get(CONF_LICENSE_KEY)
-        tier = get_license_tier(license_key)
+            tier = get_license_tier(license_key)
 
-        if tier == "free" and len(existing) >= FREE_MAX_VEHICLES:
-            return self.async_abort(reason="free_tier_limit")
+            if tier == "free" and len(existing) >= FREE_MAX_VEHICLES:
+                return self.async_abort(reason="free_tier_limit")
 
         if user_input is not None:
             self._data.update(user_input)
@@ -50,12 +50,12 @@ class VehicleManagerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Required(CONF_VEHICLE_TYPE, default="ice"): selector.SelectSelector(
                 selector.SelectSelectorConfig(
                     options=[
-                        {"value": "ice",      "label": "Car — Gasoline/Diesel (ICE)"},
-                        {"value": "ev",       "label": "Car — Electric (EV)"},
-                        {"value": "hev",      "label": "Car — Hybrid (HEV)"},
-                        {"value": "phev",     "label": "Car — Plug-in Hybrid (PHEV)"},
+                        {"value": "ice", "label": "Car — Gasoline/Diesel (ICE)"},
+                        {"value": "ev", "label": "Car — Electric (EV)"},
+                        {"value": "hev", "label": "Car — Hybrid (HEV)"},
+                        {"value": "phev", "label": "Car — Plug-in Hybrid (PHEV)"},
                         {"value": "moto_ice", "label": "Motorcycle — ICE"},
-                        {"value": "moto_ev",  "label": "Motorcycle — Electric"},
+                        {"value": "moto_ev", "label": "Motorcycle — Electric"},
                     ],
                     mode=selector.SelectSelectorMode.DROPDOWN,
                 )
@@ -68,7 +68,7 @@ class VehicleManagerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Optional(CONF_UNIT, default=UNIT_KM): selector.SelectSelector(
                 selector.SelectSelectorConfig(
                     options=[
-                        {"value": UNIT_KM,    "label": "Kilometers (km)"},
+                        {"value": UNIT_KM, "label": "Kilometers (km)"},
                         {"value": UNIT_MILES, "label": "Miles (mi)"},
                     ],
                     mode=selector.SelectSelectorMode.DROPDOWN,
@@ -94,6 +94,8 @@ class VehicleManagerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 self._data[CONF_LICENSE_KEY] = key if key else None
                 self._data["counters"] = {}
+                self._data[CONF_NOTIFICATIONS_ENABLED] = NOTIFICATIONS_ENABLED_DEFAULT
+                self._data[CONF_DISMISSED_NOTIFICATIONS] = []
                 return self.async_create_entry(
                     title=self._data[CONF_VEHICLE_NAME],
                     data=self._data,
@@ -131,7 +133,47 @@ class VehicleManagerOptionsFlow(config_entries.OptionsFlow):
         """Show options menu."""
         return self.async_show_menu(
             step_id="init",
-            menu_options=["update_counter", "update_legal", "update_license"],
+            menu_options=["update_counter", "update_legal", "update_license", "notification_settings"],
+        )
+
+    async def async_step_notification_settings(self, user_input=None):
+        """Toggle notifications on/off and reset dismissed list."""
+        errors = {}
+        if user_input is not None:
+            new_data = dict(self._entry.data)
+            new_data[CONF_NOTIFICATIONS_ENABLED] = user_input.get(
+                CONF_NOTIFICATIONS_ENABLED, NOTIFICATIONS_ENABLED_DEFAULT
+            )
+            # If user explicitly re-enables notifications, reset dismissed list
+            # so all active warnings will fire again
+            if user_input.get("reset_dismissed", False):
+                new_data[CONF_DISMISSED_NOTIFICATIONS] = []
+            self.hass.config_entries.async_update_entry(self._entry, data=new_data)
+            return self.async_create_entry(title="", data={})
+
+        current_enabled = self._entry.data.get(
+            CONF_NOTIFICATIONS_ENABLED, NOTIFICATIONS_ENABLED_DEFAULT
+        )
+        dismissed_count = len(self._entry.data.get(CONF_DISMISSED_NOTIFICATIONS, []))
+
+        schema = vol.Schema({
+            vol.Optional(
+                CONF_NOTIFICATIONS_ENABLED,
+                default=current_enabled,
+            ): selector.BooleanSelector(),
+            vol.Optional(
+                "reset_dismissed",
+                default=False,
+            ): selector.BooleanSelector(),
+        })
+
+        return self.async_show_form(
+            step_id="notification_settings",
+            data_schema=schema,
+            errors=errors,
+            description_placeholders={
+                "dismissed_count": str(dismissed_count),
+            },
         )
 
     async def async_step_update_license(self, user_input=None):
@@ -158,7 +200,7 @@ class VehicleManagerOptionsFlow(config_entries.OptionsFlow):
         )
 
     async def async_step_update_legal(self, user_input=None):
-        """Update legal document dates (RCA, CASCO, ITP, Rovinieta)."""
+        """Update legal document dates (RCA, CASCO, ITP, Rovinieta, etc.)."""
         errors = {}
         if user_input is not None:
             new_data = dict(self._entry.data)
@@ -170,19 +212,26 @@ class VehicleManagerOptionsFlow(config_entries.OptionsFlow):
                     "expiry_date": user_input.get("expiry_date"),
                 }
                 new_data["counters"] = counters
-                self.hass.config_entries.async_update_entry(self._entry, data=new_data)
+                # Reset dismissed notification for this document so it can re-fire
+                dismissed = list(new_data.get(CONF_DISMISSED_NOTIFICATIONS, []))
+                entry_id = self._entry.entry_id
+                to_remove = [d for d in dismissed if f"{entry_id}_{doc_key}_" in d]
+                for d in to_remove:
+                    dismissed.remove(d)
+                new_data[CONF_DISMISSED_NOTIFICATIONS] = dismissed
+            self.hass.config_entries.async_update_entry(self._entry, data=new_data)
             return self.async_create_entry(title="", data={})
 
         schema = vol.Schema({
             vol.Required("doc_key"): selector.SelectSelector(
                 selector.SelectSelectorConfig(
                     options=[
-                        {"value": "rca",       "label": "RCA Insurance"},
-                        {"value": "casco",     "label": "CASCO Insurance"},
-                        {"value": "itp",       "label": "Vehicle Inspection (ITP)"},
-                        {"value": "itp_ev",    "label": "Vehicle Inspection EV (ITP)"},
+                        {"value": "rca", "label": "RCA Insurance"},
+                        {"value": "casco", "label": "CASCO Insurance"},
+                        {"value": "itp", "label": "Vehicle Inspection (ITP)"},
+                        {"value": "itp_ev", "label": "Vehicle Inspection EV (ITP)"},
                         {"value": "rovinieta", "label": "Road Vignette (Rovinieta)"},
-                        {"value": "tahograf",  "label": "Tachograph"},
+                        {"value": "tahograf", "label": "Tachograph"},
                         {"value": "driving_license", "label": "Driving License"},
                     ],
                     mode=selector.SelectSelectorMode.DROPDOWN,
@@ -208,7 +257,14 @@ class VehicleManagerOptionsFlow(config_entries.OptionsFlow):
                     "last_done_km": user_input.get("last_done_km"),
                 }
                 new_data["counters"] = counters
-                self.hass.config_entries.async_update_entry(self._entry, data=new_data)
+                # Reset dismissed notification for this counter
+                dismissed = list(new_data.get(CONF_DISMISSED_NOTIFICATIONS, []))
+                entry_id = self._entry.entry_id
+                to_remove = [d for d in dismissed if f"{entry_id}_{counter_key}_" in d]
+                for d in to_remove:
+                    dismissed.remove(d)
+                new_data[CONF_DISMISSED_NOTIFICATIONS] = dismissed
+            self.hass.config_entries.async_update_entry(self._entry, data=new_data)
             return self.async_create_entry(title="", data={})
 
         schema = vol.Schema({
