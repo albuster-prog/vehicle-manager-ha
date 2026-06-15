@@ -1,0 +1,189 @@
+# Vehicle Manager HA — Cost Tracker Package
+# Adauga in configuration.yaml:
+# homeassistant:
+#   packages: !include_dir_named packages/
+
+input_select:
+  vehicle_cost_vehicle:
+    name: Vehicul
+    options:
+      - "Kia eNiro 2019 (IF84SOC)"
+      - "Toyota Avensis (BX01ABC)"
+    initial: "Kia eNiro 2019 (IF84SOC)"
+    icon: mdi:car
+
+  vehicle_cost_category:
+    name: Categorie cost
+    options:
+      - spalare
+      - detailing
+      - anvelope
+      - revizie
+      - ulei
+      - itp
+      - rca
+      - casco
+      - rovinieta
+      - combustibil
+      - incarcare
+      - accesorii
+      - altele
+    initial: spalare
+    icon: mdi:tag
+
+input_number:
+  vehicle_cost_amount:
+    name: Suma (RON)
+    min: 0
+    max: 100000
+    step: 1
+    unit_of_measurement: RON
+    icon: mdi:currency-usd
+
+  vehicle_costs_total_year:
+    name: Total costuri an curent (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:chart-line
+
+  vehicle_costs_total_month:
+    name: Total costuri luna curenta (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:chart-bar
+
+  vehicle_costs_total_all:
+    name: Total costuri all time (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:sigma
+
+input_datetime:
+  vehicle_cost_date:
+    name: Data cost
+    has_date: true
+    has_time: false
+    icon: mdi:calendar
+
+input_text:
+  vehicle_cost_notes:
+    name: Observatii
+    max: 255
+    icon: mdi:note-text
+
+script:
+  vehicle_register_cost:
+    alias: Inregistreaza cost vehicul
+    icon: mdi:plus-circle
+    fields:
+      category:
+        description: Categoria costului
+        required: true
+        selector:
+          select:
+            options:
+              - spalare
+              - detailing
+              - anvelope
+              - revizie
+              - itp
+              - rca
+              - casco
+              - rovinieta
+              - combustibil
+              - incarcare
+              - altele
+      amount:
+        description: Suma in RON
+        required: true
+        selector:
+          number:
+            min: 0
+            max: 100000
+            unit_of_measurement: RON
+      vehicle:
+        description: Vehicul
+        default: "Kia eNiro 2019"
+        selector:
+          text:
+      notes:
+        description: Observatii optionale
+        selector:
+          text:
+      date:
+        description: "Data (YYYY-MM-DD)"
+        selector:
+          date:
+    sequence:
+      - variables:
+          cost_date: "{{ date | default(now().strftime('%Y-%m-%d')) }}"
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vehicle_costs_total_all
+        data:
+          value: >
+            {{ (states('input_number.vehicle_costs_total_all') | float(0) + amount | float) | round(2) }}
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vehicle_costs_total_year
+        data:
+          value: >
+            {% if cost_date[:4] == now().year | string %}
+              {{ (states('input_number.vehicle_costs_total_year') | float(0) + amount | float) | round(2) }}
+            {% else %}
+              {{ states('input_number.vehicle_costs_total_year') | float(0) }}
+            {% endif %}
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vehicle_costs_total_month
+        data:
+          value: >
+            {% if cost_date[:7] == now().strftime('%Y-%m') %}
+              {{ (states('input_number.vehicle_costs_total_month') | float(0) + amount | float) | round(2) }}
+            {% else %}
+              {{ states('input_number.vehicle_costs_total_month') | float(0) }}
+            {% endif %}
+      - service: persistent_notification.create
+        data:
+          title: "Cost inregistrat!"
+          message: "{{ category | upper }}: {{ amount }} RON{% if notes %} - {{ notes }}{% endif %}"
+
+automation:
+  - alias: "Vehicle Costs - Reset lunar"
+    trigger:
+      - platform: time
+        at: "00:01:00"
+    condition:
+      - condition: template
+        value_template: "{{ now().day == 1 }}"
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vehicle_costs_total_month
+        data:
+          value: 0
+    mode: single
+
+  - alias: "Vehicle Costs - Reset anual"
+    trigger:
+      - platform: time
+        at: "00:02:00"
+    condition:
+      - condition: template
+        value_template: "{{ now().day == 1 and now().month == 1 }}"
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vehicle_costs_total_year
+        data:
+          value: 0
+    mode: single
