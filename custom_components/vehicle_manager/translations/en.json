@@ -1,0 +1,76 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Vehicle",
+        "description": "Enter your vehicle details.",
+        "data": {
+          "vehicle_name": "Vehicle Name",
+          "vehicle_type": "Vehicle Type",
+          "license_plate": "License Plate",
+          "vin": "VIN (optional)",
+          "odometer_entity": "Odometer Sensor (optional)",
+          "unit": "Distance Unit",
+          "warning_days": "Warning Days before expiry"
+        }
+      },
+      "license": {
+        "title": "Pro License (optional)",
+        "description": "Enter your Pro license key to unlock all maintenance counters.\n\nGet lifetime Pro at: {bmac_url}\nFormat: {format}\n\nLeave blank for Free tier (legal docs only, 1 vehicle).",
+        "data": { "license_key": "License Key" }
+      }
+    },
+    "abort": {
+      "free_tier_limit": "Free tier: max 1 vehicle. Upgrade to Pro for unlimited.",
+      "already_configured": "This vehicle is already configured."
+    },
+    "error": {
+      "invalid_license_format": "Invalid key format. Expected: VM-XXXX-XXXX-XXXX-XXXX"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Vehicle Manager Options",
+        "menu_options": {
+          "update_counter": "Update Maintenance Counter",
+          "update_legal": "Update Legal Document",
+          "update_license": "Update License Key"
+        }
+      },
+      "update_legal": {
+        "title": "Update Legal Document",
+        "data": {
+          "doc_key": "Document",
+          "start_date": "Start Date",
+          "expiry_date": "Expiry Date"
+        }
+      },
+      "update_counter": {
+        "title": "Update Maintenance Counter",
+        "data": {
+          "counter_key": "Counter Key",
+          "last_done_date": "Last Done Date",
+          "last_done_km": "Last Done Odometer (km)"
+        }
+      },
+      "update_license": {
+        "title": "Update License Key",
+        "data": { "license_key": "License Key" }
+      }
+    },
+    "error": {
+      "invalid_license_format": "Invalid key format. Expected: VM-XXXX-XXXX-XXXX-XXXX"
+    }
+  },
+  "state": {
+    "sensor": {
+      "_": {
+        "ok": "OK",
+        "warning": "Warning",
+        "expired": "Expired",
+        "unknown": "Not Configured"
+      }
+    }
+  }
+}
