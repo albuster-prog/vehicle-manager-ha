@@ -1,0 +1,26 @@
+{
+    "version": 2,
+    "name": "vehicle-manager-ha",
+    "functions": {
+          "api/**/*.js": {
+                  "runtime": "@vercel/node@3",
+                  "maxDuration": 10
+          }
+    },
+    "routes": [
+          {
+                  "src": "/api/(.*)",
+                  "dest": "/api/$1"
+          }
+    ],
+    "headers": [
+          {
+                  "source": "/api/(.*)",
+                  "headers": [
+                            { "key": "Access-Control-Allow-Origin", "value": "*" },
+                            { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+                            { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+                  ]
+          }
+    ]
+}
