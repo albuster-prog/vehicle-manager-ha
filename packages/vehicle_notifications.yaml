@@ -1,0 +1,358 @@
+# Vehicle Manager HA — Notificari mobile la expirare documente
+# Pachet autonom — adauga in /config/packages/
+# Necesita: companion app HA pe telefon (notify.mobile_app_*)
+#
+# DOCUMENTE MONITORIZATE:
+#   Kia eNiro: RCA, CASCO, ITP, Rovinieta, Permis
+#   Toyota Avensis: RCA, CASCO, ITP, Rovinieta
+#
+# PRAGURI NOTIFICARE: 30 zile, 14 zile, 7 zile, 1 zi + EXPIRAT
+# NOTIFICARE ZILNICA: 08:00 dimineata (doar daca e relevant)
+
+# ═══════════════════════════════════════════════════════════
+# INPUT BOOLEANS — toggle notificari per document
+# ═══════════════════════════════════════════════════════════
+input_boolean:
+  notify_kia_rca:
+    name: "Notificari Kia — RCA"
+    initial: true
+    icon: mdi:shield-car
+
+  notify_kia_casco:
+    name: "Notificari Kia — CASCO"
+    initial: true
+    icon: mdi:shield-check
+
+  notify_kia_itp:
+    name: "Notificari Kia — ITP"
+    initial: true
+    icon: mdi:clipboard-check
+
+  notify_kia_rovinieta:
+    name: "Notificari Kia — Rovinieta"
+    initial: true
+    icon: mdi:road
+
+  notify_kia_permis:
+    name: "Notificari Kia — Permis auto"
+    initial: true
+    icon: mdi:card-account-details
+
+  notify_avensis_rca:
+    name: "Notificari Avensis — RCA"
+    initial: true
+    icon: mdi:shield-car
+
+  notify_avensis_casco:
+    name: "Notificari Avensis — CASCO"
+    initial: true
+    icon: mdi:shield-check
+
+  notify_avensis_itp:
+    name: "Notificari Avensis — ITP"
+    initial: true
+    icon: mdi:clipboard-check
+
+  notify_avensis_rovinieta:
+    name: "Notificari Avensis — Rovinieta"
+    initial: true
+    icon: mdi:road
+
+# ═══════════════════════════════════════════════════════════
+# TEMPLATE SENSORS — zile ramase per document
+# ═══════════════════════════════════════════════════════════
+template:
+  - sensor:
+      # ── KIA eNiro ──────────────────────────────────────
+      - name: "Kia RCA zile ramase"
+        unique_id: kia_rca_days_remaining
+        icon: mdi:shield-car
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.kia_eniro_rca') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.kia_eniro_rca', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.kia_eniro_rca', 'expiry_date') }}"
+          status: "{{ states('sensor.kia_eniro_rca') }}"
+
+      - name: "Kia CASCO zile ramase"
+        unique_id: kia_casco_days_remaining
+        icon: mdi:shield-check
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.kia_eniro_casco') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.kia_eniro_casco', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.kia_eniro_casco', 'expiry_date') }}"
+          status: "{{ states('sensor.kia_eniro_casco') }}"
+
+      - name: "Kia ITP zile ramase"
+        unique_id: kia_itp_days_remaining
+        icon: mdi:clipboard-check
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.kia_eniro_itp') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.kia_eniro_itp', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.kia_eniro_itp', 'expiry_date') }}"
+          status: "{{ states('sensor.kia_eniro_itp') }}"
+
+      - name: "Kia Rovinieta zile ramase"
+        unique_id: kia_rovinieta_days_remaining
+        icon: mdi:road
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.kia_eniro_road_vignette') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.kia_eniro_road_vignette', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.kia_eniro_road_vignette', 'expiry_date') }}"
+          start_date: "{{ state_attr('sensor.kia_eniro_road_vignette', 'start_date') }}"
+          status: "{{ states('sensor.kia_eniro_road_vignette') }}"
+
+      - name: "Kia Permis zile ramase"
+        unique_id: kia_permis_days_remaining
+        icon: mdi:card-account-details
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.kia_eniro_driving_license') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.kia_eniro_driving_license', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.kia_eniro_driving_license', 'expiry_date') }}"
+          status: "{{ states('sensor.kia_eniro_driving_license') }}"
+
+      # ── Toyota Avensis ──────────────────────────────────
+      - name: "Avensis RCA zile ramase"
+        unique_id: avensis_rca_days_remaining
+        icon: mdi:shield-car
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.toyota_avensis_rca') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.toyota_avensis_rca', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.toyota_avensis_rca', 'expiry_date') }}"
+          status: "{{ states('sensor.toyota_avensis_rca') }}"
+
+      - name: "Avensis CASCO zile ramase"
+        unique_id: avensis_casco_days_remaining
+        icon: mdi:shield-check
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.toyota_avensis_casco') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.toyota_avensis_casco', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.toyota_avensis_casco', 'expiry_date') }}"
+          status: "{{ states('sensor.toyota_avensis_casco') }}"
+
+      - name: "Avensis ITP zile ramase"
+        unique_id: avensis_itp_days_remaining
+        icon: mdi:clipboard-check
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.toyota_avensis_itp') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.toyota_avensis_itp', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.toyota_avensis_itp', 'expiry_date') }}"
+          status: "{{ states('sensor.toyota_avensis_itp') }}"
+
+      - name: "Avensis Rovinieta zile ramase"
+        unique_id: avensis_rovinieta_days_remaining
+        icon: mdi:road
+        unit_of_measurement: "zile"
+        state: >
+          {% set s = states('sensor.toyota_avensis_road_vignette') %}
+          {% if s not in ['unknown','unavailable'] %}
+            {{ state_attr('sensor.toyota_avensis_road_vignette', 'days_remaining') | int(0) }}
+          {% else %}
+            -1
+          {% endif %}
+        attributes:
+          expiry_date: "{{ state_attr('sensor.toyota_avensis_road_vignette', 'expiry_date') }}"
+          status: "{{ states('sensor.toyota_avensis_road_vignette') }}"
+
+# ═══════════════════════════════════════════════════════════
+# AUTOMATION — Verificare zilnica 08:00
+# ═══════════════════════════════════════════════════════════
+automation:
+  - alias: "Vehicle Notify — Verificare zilnica documente"
+    id: vehicle_notify_daily_check
+    trigger:
+      - platform: time
+        at: "08:00:00"
+    action:
+      - alias: "Verifica fiecare document si trimite notificare daca e cazul"
+        repeat:
+          for_each:
+            # Format: [sensor_entity, toggle_entity, vehicul_label, doc_label, emoji]
+            - sensor: sensor.kia_rca_zile_ramase
+              toggle: input_boolean.notify_kia_rca
+              vehicul: "Kia eNiro (IF84SOC)"
+              doc: "RCA"
+              emoji: "🛡️"
+            - sensor: sensor.kia_casco_zile_ramase
+              toggle: input_boolean.notify_kia_casco
+              vehicul: "Kia eNiro (IF84SOC)"
+              doc: "CASCO"
+              emoji: "✅"
+            - sensor: sensor.kia_itp_zile_ramase
+              toggle: input_boolean.notify_kia_itp
+              vehicul: "Kia eNiro (IF84SOC)"
+              doc: "ITP"
+              emoji: "📋"
+            - sensor: sensor.kia_rovinieta_zile_ramase
+              toggle: input_boolean.notify_kia_rovinieta
+              vehicul: "Kia eNiro (IF84SOC)"
+              doc: "Rovinieta"
+              emoji: "🛣️"
+            - sensor: sensor.kia_permis_zile_ramase
+              toggle: input_boolean.notify_kia_permis
+              vehicul: "Kia eNiro (IF84SOC)"
+              doc: "Permis auto"
+              emoji: "🪪"
+            - sensor: sensor.avensis_rca_zile_ramase
+              toggle: input_boolean.notify_avensis_rca
+              vehicul: "Toyota Avensis (BX01ABC)"
+              doc: "RCA"
+              emoji: "🛡️"
+            - sensor: sensor.avensis_casco_zile_ramase
+              toggle: input_boolean.notify_avensis_casco
+              vehicul: "Toyota Avensis (BX01ABC)"
+              doc: "CASCO"
+              emoji: "✅"
+            - sensor: sensor.avensis_itp_zile_ramase
+              toggle: input_boolean.notify_avensis_itp
+              vehicul: "Toyota Avensis (BX01ABC)"
+              doc: "ITP"
+              emoji: "📋"
+            - sensor: sensor.avensis_rovinieta_zile_ramase
+              toggle: input_boolean.notify_avensis_rovinieta
+              vehicul: "Toyota Avensis (BX01ABC)"
+              doc: "Rovinieta"
+              emoji: "🛣️"
+          sequence:
+            - variables:
+                zile: "{{ states(repeat.item.sensor) | int(-1) }}"
+                toggle_on: "{{ is_state(repeat.item.toggle, 'on') }}"
+                prag_notif: >
+                  {{ zile <= 30 and zile >= 0 or zile < 0 }}
+            - condition: template
+              value_template: "{{ toggle_on and prag_notif }}"
+            - variables:
+                urgenta: >
+                  {% if zile < 0 %}
+                    critical
+                  {% elif zile <= 7 %}
+                    high
+                  {% elif zile <= 14 %}
+                    time-sensitive
+                  {% else %}
+                    active
+                  {% endif %}
+                titlu: >
+                  {% if zile < 0 %}
+                    {{ repeat.item.emoji }} EXPIRAT: {{ repeat.item.doc }}
+                  {% elif zile == 0 %}
+                    {{ repeat.item.emoji }} EXPIRA AZI: {{ repeat.item.doc }}
+                  {% elif zile == 1 %}
+                    {{ repeat.item.emoji }} EXPIRA MAINE: {{ repeat.item.doc }}
+                  {% elif zile <= 7 %}
+                    {{ repeat.item.emoji }} {{ repeat.item.doc }} expira in {{ zile }} zile!
+                  {% elif zile <= 14 %}
+                    {{ repeat.item.emoji }} {{ repeat.item.doc }} — {{ zile }} zile ramase
+                  {% else %}
+                    {{ repeat.item.emoji }} {{ repeat.item.doc }} — atentie: {{ zile }} zile
+                  {% endif %}
+                mesaj: >
+                  {{ repeat.item.vehicul }}
+                  {% if zile < 0 %}
+                    Document EXPIRAT! Reinnoieste urgent.
+                  {% else %}
+                    Expira in {{ zile }} zile.
+                  {% endif %}
+            # Notificare persistenta in HA
+            - service: persistent_notification.create
+              data:
+                notification_id: "vm_{{ repeat.item.sensor | replace('.','_') }}"
+                title: "{{ titlu }}"
+                message: "{{ mesaj }}"
+            # Notificare mobile (companion app)
+            # IMPORTANT: inlocuieste 'notify.mobile_app_telefonul_tau' cu serviciul tau real
+            - service: notify.mobile_app_telefonul_tau
+              continue_on_error: true
+              data:
+                title: "{{ titlu }}"
+                message: "{{ mesaj }}"
+                data:
+                  push:
+                    interruption-level: "{{ urgenta }}"
+                  tag: "vm_{{ repeat.item.sensor }}"
+                  group: "vehicle-manager"
+                  color: >
+                    {% if zile < 0 %}
+                      "#ef4444"
+                    {% elif zile <= 7 %}
+                      "#f97316"
+                    {% elif zile <= 14 %}
+                      "#eab308"
+                    {% else %}
+                      "#3b82f6"
+                    {% endif %}
+    mode: single
+
+  # ── Curata notificarile persistente cand documentul e OK ─
+  - alias: "Vehicle Notify — Curata notificari rezolvate"
+    id: vehicle_notify_clear_resolved
+    trigger:
+      - platform: time
+        at: "08:01:00"
+    action:
+      - repeat:
+          for_each:
+            - sensor: sensor.kia_rca_zile_ramase
+            - sensor: sensor.kia_casco_zile_ramase
+            - sensor: sensor.kia_itp_zile_ramase
+            - sensor: sensor.kia_rovinieta_zile_ramase
+            - sensor: sensor.kia_permis_zile_ramase
+            - sensor: sensor.avensis_rca_zile_ramase
+            - sensor: sensor.avensis_casco_zile_ramase
+            - sensor: sensor.avensis_itp_zile_ramase
+            - sensor: sensor.avensis_rovinieta_zile_ramase
+          sequence:
+            - condition: template
+              value_template: >
+                {{ states(repeat.item.sensor) | int(-1) > 30 }}
+            - service: persistent_notification.dismiss
+              data:
+                notification_id: "vm_{{ repeat.item.sensor | replace('.','_') }}"
+    mode: single
