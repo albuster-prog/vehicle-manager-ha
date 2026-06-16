@@ -1,25 +1,33 @@
-# Vehicle Manager HA — Cost Tracker Package
+# Vehicle Manager HA — Cost Tracker Package v2
 # Adauga in configuration.yaml:
 # homeassistant:
 #   packages: !include_dir_named packages/
+#
+# VERSIUNE 2: Toyota Avensis + filtrare per vehicul + statistici per vehicul
 
 input_select:
   vehicle_cost_vehicle:
-    name: Vehicul
+    name: Vehicul activ
     options:
+      - "Toate vehiculele"
       - "Kia eNiro 2019 (IF84SOC)"
       - "Toyota Avensis (BX01ABC)"
-    initial: "Kia eNiro 2019 (IF84SOC)"
-    icon: mdi:car
+    initial: "Toate vehiculele"
+    icon: mdi:car-multiple
 
   vehicle_cost_category:
     name: Categorie cost
     options:
       - spalare
       - detailing
+      - aspirare
       - anvelope
+      - jante
+      - echilibrare
       - revizie
       - ulei
+      - frane
+      - baterie
       - itp
       - rca
       - casco
@@ -40,8 +48,65 @@ input_number:
     unit_of_measurement: RON
     icon: mdi:currency-usd
 
+  # ── Kia eNiro ──────────────────────────────────────────
+  kia_costs_total_year:
+    name: Kia eNiro — Total an curent (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-electric
+
+  kia_costs_total_month:
+    name: Kia eNiro — Total luna curenta (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-electric
+
+  kia_costs_total_all:
+    name: Kia eNiro — Total all time (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-electric
+
+  # ── Toyota Avensis ─────────────────────────────────────
+  avensis_costs_total_year:
+    name: Toyota Avensis — Total an curent (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car
+
+  avensis_costs_total_month:
+    name: Toyota Avensis — Total luna curenta (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car
+
+  avensis_costs_total_all:
+    name: Toyota Avensis — Total all time (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car
+
+  # ── GLOBAL (toate vehiculele) ──────────────────────────
   vehicle_costs_total_year:
-    name: Total costuri an curent (RON)
+    name: Total costuri an curent — toate vehiculele (RON)
     min: 0
     max: 9999999
     step: 0.01
@@ -50,7 +115,7 @@ input_number:
     icon: mdi:chart-line
 
   vehicle_costs_total_month:
-    name: Total costuri luna curenta (RON)
+    name: Total costuri luna curenta — toate vehiculele (RON)
     min: 0
     max: 9999999
     step: 0.01
@@ -59,13 +124,104 @@ input_number:
     icon: mdi:chart-bar
 
   vehicle_costs_total_all:
-    name: Total costuri all time (RON)
+    name: Total costuri all time — toate vehiculele (RON)
     min: 0
     max: 9999999
     step: 0.01
     unit_of_measurement: RON
     mode: box
     icon: mdi:sigma
+
+  # ── Costuri lunare per categorie (luna curenta, global) ─
+  cost_cat_spalare:
+    name: Cost Spalare luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:water
+
+  cost_cat_detailing:
+    name: Cost Detailing luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:spray
+
+  cost_cat_anvelope:
+    name: Cost Anvelope luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:tire
+
+  cost_cat_revizie:
+    name: Cost Revizie luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:wrench
+
+  cost_cat_itp:
+    name: Cost ITP luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:clipboard-check
+
+  cost_cat_rca:
+    name: Cost RCA luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shield-car
+
+  cost_cat_casco:
+    name: Cost CASCO luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shield-check
+
+  cost_cat_rovinieta:
+    name: Cost Rovinieta luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:road
+
+  cost_cat_incarcare:
+    name: Cost Incarcare luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:ev-station
+
+  cost_cat_altele:
+    name: Cost Altele luna curenta (RON)
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:dots-horizontal
 
 input_datetime:
   vehicle_cost_date:
@@ -93,14 +249,21 @@ script:
             options:
               - spalare
               - detailing
+              - aspirare
               - anvelope
+              - jante
+              - echilibrare
               - revizie
+              - ulei
+              - frane
+              - baterie
               - itp
               - rca
               - casco
               - rovinieta
               - combustibil
               - incarcare
+              - accesorii
               - altele
       amount:
         description: Suma in RON
@@ -111,10 +274,13 @@ script:
             max: 100000
             unit_of_measurement: RON
       vehicle:
-        description: Vehicul
-        default: "Kia eNiro 2019"
+        description: "Vehicul (kia / avensis)"
+        default: "kia"
         selector:
-          text:
+          select:
+            options:
+              - "kia"
+              - "avensis"
       notes:
         description: Observatii optionale
         selector:
@@ -126,12 +292,53 @@ script:
     sequence:
       - variables:
           cost_date: "{{ date | default(now().strftime('%Y-%m-%d')) }}"
+          vehicle_prefix: "{{ vehicle | default('kia') }}"
+          cat_entity: >
+            {% set cats = ['spalare','detailing','anvelope','revizie','itp','rca','casco','rovinieta','incarcare','altele'] %}
+            {% if category in cats %}
+              input_number.cost_cat_{{ category }}
+            {% else %}
+              input_number.cost_cat_altele
+            {% endif %}
+
+      # ── Update vehicul specific ────────────────────────
+      - service: input_number.set_value
+        target:
+          entity_id: "input_number.{{ vehicle_prefix }}_costs_total_all"
+        data:
+          value: >
+            {{ (states('input_number.' ~ vehicle_prefix ~ '_costs_total_all') | float(0) + amount | float) | round(2) }}
+
+      - service: input_number.set_value
+        target:
+          entity_id: "input_number.{{ vehicle_prefix }}_costs_total_year"
+        data:
+          value: >
+            {% if cost_date[:4] == now().year | string %}
+              {{ (states('input_number.' ~ vehicle_prefix ~ '_costs_total_year') | float(0) + amount | float) | round(2) }}
+            {% else %}
+              {{ states('input_number.' ~ vehicle_prefix ~ '_costs_total_year') | float(0) }}
+            {% endif %}
+
+      - service: input_number.set_value
+        target:
+          entity_id: "input_number.{{ vehicle_prefix }}_costs_total_month"
+        data:
+          value: >
+            {% if cost_date[:7] == now().strftime('%Y-%m') %}
+              {{ (states('input_number.' ~ vehicle_prefix ~ '_costs_total_month') | float(0) + amount | float) | round(2) }}
+            {% else %}
+              {{ states('input_number.' ~ vehicle_prefix ~ '_costs_total_month') | float(0) }}
+            {% endif %}
+
+      # ── Update global ──────────────────────────────────
       - service: input_number.set_value
         target:
           entity_id: input_number.vehicle_costs_total_all
         data:
           value: >
             {{ (states('input_number.vehicle_costs_total_all') | float(0) + amount | float) | round(2) }}
+
       - service: input_number.set_value
         target:
           entity_id: input_number.vehicle_costs_total_year
@@ -142,6 +349,7 @@ script:
             {% else %}
               {{ states('input_number.vehicle_costs_total_year') | float(0) }}
             {% endif %}
+
       - service: input_number.set_value
         target:
           entity_id: input_number.vehicle_costs_total_month
@@ -152,12 +360,29 @@ script:
             {% else %}
               {{ states('input_number.vehicle_costs_total_month') | float(0) }}
             {% endif %}
+
+      # ── Update categorie luna curenta ──────────────────
+      - service: input_number.set_value
+        target:
+          entity_id: "{{ cat_entity }}"
+        data:
+          value: >
+            {% if cost_date[:7] == now().strftime('%Y-%m') %}
+              {{ (states(cat_entity) | float(0) + amount | float) | round(2) }}
+            {% else %}
+              {{ states(cat_entity) | float(0) }}
+            {% endif %}
+
+      # ── Notificare ─────────────────────────────────────
       - service: persistent_notification.create
         data:
           title: "Cost inregistrat!"
-          message: "{{ category | upper }}: {{ amount }} RON{% if notes %} - {{ notes }}{% endif %}"
+          message: >
+            {{ vehicle_prefix | upper }} — {{ category | upper }}: {{ amount }} RON
+            {% if notes %} ({{ notes }}){% endif %}
 
 automation:
+  # ── Reset lunar ────────────────────────────────────────
   - alias: "Vehicle Costs - Reset lunar"
     trigger:
       - platform: time
@@ -168,11 +393,25 @@ automation:
     action:
       - service: input_number.set_value
         target:
-          entity_id: input_number.vehicle_costs_total_month
+          entity_id:
+            - input_number.vehicle_costs_total_month
+            - input_number.kia_costs_total_month
+            - input_number.avensis_costs_total_month
+            - input_number.cost_cat_spalare
+            - input_number.cost_cat_detailing
+            - input_number.cost_cat_anvelope
+            - input_number.cost_cat_revizie
+            - input_number.cost_cat_itp
+            - input_number.cost_cat_rca
+            - input_number.cost_cat_casco
+            - input_number.cost_cat_rovinieta
+            - input_number.cost_cat_incarcare
+            - input_number.cost_cat_altele
         data:
           value: 0
     mode: single
 
+  # ── Reset anual ────────────────────────────────────────
   - alias: "Vehicle Costs - Reset anual"
     trigger:
       - platform: time
@@ -183,7 +422,10 @@ automation:
     action:
       - service: input_number.set_value
         target:
-          entity_id: input_number.vehicle_costs_total_year
+          entity_id:
+            - input_number.vehicle_costs_total_year
+            - input_number.kia_costs_total_year
+            - input_number.avensis_costs_total_year
         data:
           value: 0
     mode: single
