@@ -1,0 +1,216 @@
+# ══════════════════════════════════════════════════════════════
+# CARD 2 — Costuri Vehicule v2
+# Vehicle Manager HA — Dashboard Kia eNiro / Toyota Avensis
+#
+# FUNCTII NOI v2:
+#   ✅ Selector vehicul (Toate / Kia / Avensis)
+#   ✅ Statistici per vehicul (luna / an / total)
+#   ✅ Mini bar-chart lunar per categorie (10 categorii)
+#   ✅ Toyota Avensis ca al 2-lea vehicul
+#   ✅ Formular adaugare cost rapid
+#
+# NECESITA: button-card custom (HACS)
+#           input_number / input_select din vehicle_costs.yaml v2
+# ══════════════════════════════════════════════════════════════
+
+type: custom:button-card
+name: false
+show_name: false
+show_icon: false
+show_state: false
+styles:
+  card:
+    - background: "rgba(15,15,20,0.97)"
+    - border-radius: 20px
+    - padding: 0
+    - box-shadow: "0 8px 40px rgba(0,0,0,0.6)"
+    - overflow: hidden
+    - font-family: monospace
+custom_fields:
+  costuri_card: |
+    [[[
+      // ── helpers ────────────────────────────────────────────────
+      function fmt(n) {
+        const v = parseFloat(n) || 0;
+        return v === 0 ? '0' : v.toLocaleString('ro-RO', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+      }
+      function bar(val, max, color) {
+        const pct = max > 0 ? Math.min(100, Math.round(val / max * 100)) : 0;
+        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="flex:1;background:rgba(255,255,255,0.07);border-radius:4px;height:6px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:${color};border-radius:4px;transition:width 0.4s ease"></div>
+          </div>
+          <span style="font-size:10px;color:#9ca3af;min-width:52px;text-align:right">${fmt(val)} RON</span>
+        </div>`;
+      }
+
+      // ── vehicul selectat ───────────────────────────────────────
+      const vehiculSel = states['input_select.vehicle_cost_vehicle']?.state || 'Toate vehiculele';
+      const isKia      = vehiculSel.includes('Kia');
+      const isAvensis  = vehiculSel.includes('Avensis');
+      const isAll      = !isKia && !isAvensis;
+
+      // ── prefix entitati ───────────────────────────────────────
+      const pfx = isKia ? 'kia' : isAvensis ? 'avensis' : 'vehicle';
+
+      // ── statistici ────────────────────────────────────────────
+      const luna  = parseFloat(states[`input_number.${pfx}_costs_total_month`]?.state) || 0;
+      const an    = parseFloat(states[`input_number.${pfx}_costs_total_year`]?.state) || 0;
+      const total = parseFloat(states[`input_number.${pfx}_costs_total_all`]?.state) || 0;
+
+      // ── costuri per categorie (luna curenta, toate vehiculele) ─
+      const cats = [
+        { key: 'spalare',   label: 'Spalare',   color: '#38bdf8', icon: '💧' },
+        { key: 'detailing', label: 'Detailing', color: '#a78bfa', icon: '✨' },
+        { key: 'anvelope',  label: 'Anvelope',  color: '#fb923c', icon: '⭕' },
+        { key: 'revizie',   label: 'Revizie',   color: '#4ade80', icon: '🔧' },
+        { key: 'itp',       label: 'ITP',       color: '#34d399', icon: '📋' },
+        { key: 'rca',       label: 'RCA',       color: '#60a5fa', icon: '🛡️' },
+        { key: 'casco',     label: 'CASCO',     color: '#c084fc', icon: '✅' },
+        { key: 'rovinieta', label: 'Rovinieta', color: '#fbbf24', icon: '🛣️' },
+        { key: 'incarcare', label: 'Incarcare', color: '#22d3ee', icon: '⚡' },
+        { key: 'altele',    label: 'Altele',    color: '#9ca3af', icon: '📦' },
+      ];
+
+      const catVals = cats.map(c => ({
+        ...c,
+        val: parseFloat(states[`input_number.cost_cat_${c.key}`]?.state) || 0
+      }));
+      const maxCat = Math.max(...catVals.map(c => c.val), 1);
+
+      // ── selector vehicule ─────────────────────────────────────
+      const vehicule = ['Toate vehiculele', 'Kia eNiro 2019 (IF84SOC)', 'Toyota Avensis (BX01ABC)'];
+      const selBtns = vehicule.map(v => {
+        const active = vehiculSel === v;
+        const color  = v.includes('Kia') ? '#38bdf8' : v.includes('Avensis') ? '#4ade80' : '#a78bfa';
+        const label  = v.includes('Kia') ? '🔵 KIA' : v.includes('Avensis') ? '🟢 AVENSIS' : '🔷 TOATE';
+        return `<button
+          style="flex:1;padding:6px 4px;border:1px solid ${active ? color : 'rgba(255,255,255,0.1)'};
+            background:${active ? color + '22' : 'transparent'};
+            color:${active ? color : '#6b7280'};border-radius:8px;font-size:10px;
+            font-family:monospace;cursor:pointer;font-weight:${active ? 700 : 400}"
+          onclick="(function(){
+            const hass = document.querySelector('home-assistant').hass;
+            hass.callService('input_select','select_option',{
+              entity_id:'input_select.vehicle_cost_vehicle',
+              option:'${v}'
+            });
+          })()">${label}</button>`;
+      }).join('');
+
+      // ── badge vehicul ─────────────────────────────────────────
+      const badgeColor = isKia ? '#38bdf8' : isAvensis ? '#4ade80' : '#a78bfa';
+      const badgeLabel = isKia ? '🚗 KIA eNiro 2019' : isAvensis ? '🚙 Toyota Avensis' : '🚘 Toate vehiculele';
+
+      // ── render ────────────────────────────────────────────────
+      return `
+      <div style="padding:20px;font-family:monospace">
+
+        <!-- HEADER -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
+          <div>
+            <div style="font-size:18px;font-weight:700;color:#f9fafb;letter-spacing:0.5px">
+              💰 Costuri Vehicule
+            </div>
+            <div style="font-size:11px;color:#6b7280;margin-top:2px">Tracker cheltuieli auto</div>
+          </div>
+          <div style="background:${badgeColor}22;border:1px solid ${badgeColor}55;
+            border-radius:10px;padding:4px 10px;font-size:10px;color:${badgeColor};font-weight:600">
+            ${badgeLabel}
+          </div>
+        </div>
+
+        <!-- SEPARATOR -->
+        <div style="height:2px;background:linear-gradient(90deg,${badgeColor},transparent);
+          border-radius:2px;margin-bottom:16px;opacity:0.7"></div>
+
+        <!-- SELECTOR VEHICULE -->
+        <div style="display:flex;gap:6px;margin-bottom:18px">
+          ${selBtns}
+        </div>
+
+        <!-- STATISTICI 3 COLOANE -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+          <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);
+            border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:10px;color:#38bdf8;text-transform:uppercase;
+              letter-spacing:1px;margin-bottom:4px">Luna</div>
+            <div style="font-size:20px;font-weight:700;color:#f9fafb">${fmt(luna)}</div>
+            <div style="font-size:10px;color:#6b7280">RON</div>
+          </div>
+          <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);
+            border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:10px;color:#a78bfa;text-transform:uppercase;
+              letter-spacing:1px;margin-bottom:4px">Anul</div>
+            <div style="font-size:20px;font-weight:700;color:#f9fafb">${fmt(an)}</div>
+            <div style="font-size:10px;color:#6b7280">RON</div>
+          </div>
+          <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);
+            border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:10px;color:#4ade80;text-transform:uppercase;
+              letter-spacing:1px;margin-bottom:4px">Total</div>
+            <div style="font-size:20px;font-weight:700;color:#f9fafb">${fmt(total)}</div>
+            <div style="font-size:10px;color:#6b7280">RON</div>
+          </div>
+        </div>
+
+        <!-- SEPARATOR -->
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:16px"></div>
+
+        <!-- BAR CHART CATEGORII (luna curenta) -->
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;
+            letter-spacing:1px;margin-bottom:10px">📊 Luna curentă — per categorie</div>
+          ${catVals.map(c => `
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <span style="font-size:11px;min-width:18px">${c.icon}</span>
+              <span style="font-size:10px;color:#9ca3af;min-width:60px">${c.label}</span>
+              <div style="flex:1">${bar(c.val, maxCat, c.color)}</div>
+            </div>`).join('')}
+        </div>
+
+        <!-- SEPARATOR -->
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:16px"></div>
+
+        <!-- GRID CATEGORII QUICK-ADD -->
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;
+            letter-spacing:1px;margin-bottom:10px">⚡ Adaugare rapida cost</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+            ${catVals.map(c => `
+              <button style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+                border-radius:10px;padding:8px 4px;text-align:center;cursor:pointer;
+                transition:all 0.2s"
+                onmouseover="this.style.background='rgba(255,255,255,0.09)'"
+                onmouseout="this.style.background='rgba(255,255,255,0.04)'"
+                onclick="(function(){
+                  const hass=document.querySelector('home-assistant').hass;
+                  hass.callService('input_select','select_option',{
+                    entity_id:'input_select.vehicle_cost_category',option:'${c.key}'
+                  });
+                })()">
+                <div style="font-size:16px;margin-bottom:3px">${c.icon}</div>
+                <div style="font-size:9px;color:#9ca3af">${c.label}</div>
+              </button>`).join('')}
+          </div>
+        </div>
+
+        <!-- FOOTER INFO -->
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);
+          display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:9px;color:#4b5563">
+            Reset lunar: 1 ale lunii · Reset anual: 1 ian
+          </div>
+          <div style="font-size:9px;color:#4b5563">
+            Vehicle Manager HA v2
+          </div>
+        </div>
+
+      </div>
+      `;
+    ]]]
+styles:
+  custom_fields:
+    costuri_card:
+      - padding: 0
+      - width: 100%
