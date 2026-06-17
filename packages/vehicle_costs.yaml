@@ -1,9 +1,10 @@
-# Vehicle Manager HA — Cost Tracker Package v2
+# Vehicle Manager HA — Cost Tracker Package v3
 # Adauga in configuration.yaml:
 # homeassistant:
 #   packages: !include_dir_named packages/
 #
-# VERSIUNE 2: Toyota Avensis + filtrare per vehicul + statistici per vehicul
+# VERSIUNE 3: Kia eNiro + Toyota Avensis + Suzuki GSXR 750
+#             filtrare per vehicul + statistici per vehicul
 
 input_select:
   vehicle_cost_vehicle:
@@ -11,7 +12,8 @@ input_select:
     options:
       - "Toate vehiculele"
       - "Kia eNiro 2019 (IF84SOC)"
-      - "Toyota Avensis (BX01ABC)"
+      - "Toyota Avensis (IF08COB)"
+      - "Suzuki GSXR 750 (moto)"
     initial: "Toate vehiculele"
     icon: mdi:car-multiple
 
@@ -104,6 +106,34 @@ input_number:
     mode: box
     icon: mdi:car
 
+  # ── Suzuki GSXR 750 ────────────────────────────────────
+  gsxr_costs_total_year:
+    name: Suzuki GSXR — Total an curent (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:motorbike
+
+  gsxr_costs_total_month:
+    name: Suzuki GSXR — Total luna curenta (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:motorbike
+
+  gsxr_costs_total_all:
+    name: Suzuki GSXR — Total all time (RON)
+    min: 0
+    max: 9999999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:motorbike
+
   # ── GLOBAL (toate vehiculele) ──────────────────────────
   vehicle_costs_total_year:
     name: Total costuri an curent — toate vehiculele (RON)
@@ -121,7 +151,7 @@ input_number:
     step: 0.01
     unit_of_measurement: RON
     mode: box
-    icon: mdi:chart-bar
+    icon: mdi:chart-line
 
   vehicle_costs_total_all:
     name: Total costuri all time — toate vehiculele (RON)
@@ -130,29 +160,29 @@ input_number:
     step: 0.01
     unit_of_measurement: RON
     mode: box
-    icon: mdi:sigma
+    icon: mdi:chart-line
 
-  # ── Costuri lunare per categorie (luna curenta, global) ─
-  cost_cat_spalare:
-    name: Cost Spalare luna curenta (RON)
+  # ── Costuri per categorie lunar — Kia eNiro ────────────
+  kia_cat_spalare_month:
+    name: "Kia — Spalare luna"
     min: 0
     max: 99999
     step: 0.01
     unit_of_measurement: RON
     mode: box
-    icon: mdi:water
+    icon: mdi:car-wash
 
-  cost_cat_detailing:
-    name: Cost Detailing luna curenta (RON)
+  kia_cat_detailing_month:
+    name: "Kia — Detailing luna"
     min: 0
     max: 99999
     step: 0.01
     unit_of_measurement: RON
     mode: box
-    icon: mdi:spray
+    icon: mdi:auto-fix
 
-  cost_cat_anvelope:
-    name: Cost Anvelope luna curenta (RON)
+  kia_cat_anvelope_month:
+    name: "Kia — Anvelope luna"
     min: 0
     max: 99999
     step: 0.01
@@ -160,8 +190,8 @@ input_number:
     mode: box
     icon: mdi:tire
 
-  cost_cat_revizie:
-    name: Cost Revizie luna curenta (RON)
+  kia_cat_revizie_month:
+    name: "Kia — Revizie luna"
     min: 0
     max: 99999
     step: 0.01
@@ -169,8 +199,8 @@ input_number:
     mode: box
     icon: mdi:wrench
 
-  cost_cat_itp:
-    name: Cost ITP luna curenta (RON)
+  kia_cat_itp_month:
+    name: "Kia — ITP luna"
     min: 0
     max: 99999
     step: 0.01
@@ -178,8 +208,8 @@ input_number:
     mode: box
     icon: mdi:clipboard-check
 
-  cost_cat_rca:
-    name: Cost RCA luna curenta (RON)
+  kia_cat_rca_month:
+    name: "Kia — RCA luna"
     min: 0
     max: 99999
     step: 0.01
@@ -187,8 +217,8 @@ input_number:
     mode: box
     icon: mdi:shield-car
 
-  cost_cat_casco:
-    name: Cost CASCO luna curenta (RON)
+  kia_cat_casco_month:
+    name: "Kia — CASCO luna"
     min: 0
     max: 99999
     step: 0.01
@@ -196,8 +226,8 @@ input_number:
     mode: box
     icon: mdi:shield-check
 
-  cost_cat_rovinieta:
-    name: Cost Rovinieta luna curenta (RON)
+  kia_cat_rovinieta_month:
+    name: "Kia — Rovinieta luna"
     min: 0
     max: 99999
     step: 0.01
@@ -205,8 +235,8 @@ input_number:
     mode: box
     icon: mdi:road
 
-  cost_cat_incarcare:
-    name: Cost Incarcare luna curenta (RON)
+  kia_cat_incarcare_month:
+    name: "Kia — Incarcare luna"
     min: 0
     max: 99999
     step: 0.01
@@ -214,8 +244,35 @@ input_number:
     mode: box
     icon: mdi:ev-station
 
-  cost_cat_altele:
-    name: Cost Altele luna curenta (RON)
+  kia_cat_combustibil_month:
+    name: "Kia — Combustibil luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:gas-station
+
+  kia_cat_accesorii_month:
+    name: "Kia — Accesorii luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shopping
+
+  kia_cat_frane_month:
+    name: "Kia — Frane luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-brake-abs
+
+  kia_cat_altele_month:
+    name: "Kia — Altele luna"
     min: 0
     max: 99999
     step: 0.01
@@ -223,209 +280,333 @@ input_number:
     mode: box
     icon: mdi:dots-horizontal
 
-input_datetime:
-  vehicle_cost_date:
-    name: Data cost
-    has_date: true
-    has_time: false
-    icon: mdi:calendar
+  # ── Costuri per categorie lunar — Toyota Avensis ───────
+  avensis_cat_spalare_month:
+    name: "Avensis — Spalare luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-wash
 
-input_text:
-  vehicle_cost_notes:
-    name: Observatii
-    max: 255
-    icon: mdi:note-text
+  avensis_cat_detailing_month:
+    name: "Avensis — Detailing luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:auto-fix
 
+  avensis_cat_anvelope_month:
+    name: "Avensis — Anvelope luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:tire
+
+  avensis_cat_revizie_month:
+    name: "Avensis — Revizie luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:wrench
+
+  avensis_cat_itp_month:
+    name: "Avensis — ITP luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:clipboard-check
+
+  avensis_cat_rca_month:
+    name: "Avensis — RCA luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shield-car
+
+  avensis_cat_casco_month:
+    name: "Avensis — CASCO luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shield-check
+
+  avensis_cat_rovinieta_month:
+    name: "Avensis — Rovinieta luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:road
+
+  avensis_cat_combustibil_month:
+    name: "Avensis — Combustibil luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:gas-station
+
+  avensis_cat_accesorii_month:
+    name: "Avensis — Accesorii luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shopping
+
+  avensis_cat_frane_month:
+    name: "Avensis — Frane luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-brake-abs
+
+  avensis_cat_altele_month:
+    name: "Avensis — Altele luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:dots-horizontal
+
+  # ── Costuri per categorie lunar — Suzuki GSXR 750 ─────
+  gsxr_cat_spalare_month:
+    name: "GSXR — Spalare luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-wash
+
+  gsxr_cat_detailing_month:
+    name: "GSXR — Detailing luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:auto-fix
+
+  gsxr_cat_anvelope_month:
+    name: "GSXR — Anvelope luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:tire
+
+  gsxr_cat_revizie_month:
+    name: "GSXR — Revizie luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:wrench
+
+  gsxr_cat_itp_month:
+    name: "GSXR — ITP luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:clipboard-check
+
+  gsxr_cat_rca_month:
+    name: "GSXR — RCA luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shield-car
+
+  gsxr_cat_casco_month:
+    name: "GSXR — CASCO luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shield-check
+
+  gsxr_cat_combustibil_month:
+    name: "GSXR — Combustibil luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:gas-station
+
+  gsxr_cat_accesorii_month:
+    name: "GSXR — Accesorii luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:shopping
+
+  gsxr_cat_frane_month:
+    name: "GSXR — Frane luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:car-brake-abs
+
+  gsxr_cat_altele_month:
+    name: "GSXR — Altele luna"
+    min: 0
+    max: 99999
+    step: 0.01
+    unit_of_measurement: RON
+    mode: box
+    icon: mdi:dots-horizontal
+
+# ═══════════════════════════════════════════════════════════
+# SENSORS — documente Toyota Avensis
+# ═══════════════════════════════════════════════════════════
+template:
+  - sensor:
+    # ── Toyota Avensis RCA ────────────────────────────
+    - name: "Toyota Avensis RCA"
+      unique_id: avensis_rca_insurance
+      icon: mdi:shield-car
+      state: >
+        {% set expiry = "2026-12-20" %}
+        {% set days = ((expiry | as_datetime) - now()).days %}
+        {% if days < 0 %}EXPIRAT
+        {% elif days <= 30 %}EXPIRA CURAND
+        {% else %}ACTIV{% endif %}
+      attributes:
+        expiry_date: "20.12.26"
+        days_remaining: >
+          {% set expiry = "2026-12-20" %}
+          {{ ((expiry | as_datetime) - now()).days | int }}
+        start_date: "21.12.25"
+        company: "GRAWE"
+        vehicle: "Toyota Avensis IF08COB"
+
+    # ── Toyota Avensis ITP ───────────────────────────
+    - name: "Toyota Avensis ITP"
+      unique_id: avensis_itp
+      icon: mdi:clipboard-check
+      state: >
+        {% set expiry = "2026-08-07" %}
+        {% set days = ((expiry | as_datetime) - now()).days %}
+        {% if days < 0 %}EXPIRAT
+        {% elif days <= 30 %}EXPIRA CURAND
+        {% else %}ACTIV{% endif %}
+      attributes:
+        expiry_date: "07.08.26"
+        days_remaining: >
+          {% set expiry = "2026-08-07" %}
+          {{ ((expiry | as_datetime) - now()).days | int }}
+        frequency: "anual"
+        vehicle: "Toyota Avensis IF08COB"
+
+    # ── Toyota Avensis Rovinieta ─────────────────────
+    - name: "Toyota Avensis Rovinieta"
+      unique_id: avensis_rovinieta
+      icon: mdi:road
+      state: "EXPIRATA"
+      attributes:
+        expiry_date: "expirata"
+        days_remaining: -999
+        vehicle: "Toyota Avensis IF08COB"
+        note: "Rovinieta expirata — reinnoire necesara"
+
+    # ── Suzuki GSXR 750 RCA ──────────────────────────
+    - name: "Suzuki GSXR RCA"
+      unique_id: gsxr_rca_insurance
+      icon: mdi:shield-car
+      state: >
+        {% set expiry = "2026-07-07" %}
+        {% set days = ((expiry | as_datetime) - now()).days %}
+        {% if days < 0 %}EXPIRAT
+        {% elif days <= 30 %}EXPIRA CURAND
+        {% else %}ACTIV{% endif %}
+      attributes:
+        expiry_date: "07.07.26"
+        days_remaining: >
+          {% set expiry = "2026-07-07" %}
+          {{ ((expiry | as_datetime) - now()).days | int }}
+        start_date: "08.07.25"
+        company: "Groupama"
+        vehicle: "Suzuki GSXR 750"
+
+    # ── Suzuki GSXR 750 ITP ──────────────────────────
+    - name: "Suzuki GSXR ITP"
+      unique_id: gsxr_itp
+      icon: mdi:clipboard-check
+      state: >
+        {% set expiry = "2027-07-15" %}
+        {% set days = ((expiry | as_datetime) - now()).days %}
+        {% if days < 0 %}EXPIRAT
+        {% elif days <= 30 %}EXPIRA CURAND
+        {% else %}ACTIV{% endif %}
+      attributes:
+        expiry_date: "15.07.27"
+        days_remaining: >
+          {% set expiry = "2027-07-15" %}
+          {{ ((expiry | as_datetime) - now()).days | int }}
+        frequency: "la 2 ani (fabricatie 2004 - sub 10 ani vechime la ITP actual)"
+        vehicle: "Suzuki GSXR 750"
+
+# ═══════════════════════════════════════════════════════════
+# SCRIPT — inregistrare cost
+# ═══════════════════════════════════════════════════════════
 script:
   vehicle_register_cost:
-    alias: Inregistreaza cost vehicul
-    icon: mdi:plus-circle
-    fields:
-      category:
-        description: Categoria costului
-        required: true
-        selector:
-          select:
-            options:
-              - spalare
-              - detailing
-              - aspirare
-              - anvelope
-              - jante
-              - echilibrare
-              - revizie
-              - ulei
-              - frane
-              - baterie
-              - itp
-              - rca
-              - casco
-              - rovinieta
-              - combustibil
-              - incarcare
-              - accesorii
-              - altele
-      amount:
-        description: Suma in RON
-        required: true
-        selector:
-          number:
-            min: 0
-            max: 100000
-            unit_of_measurement: RON
-      vehicle:
-        description: "Vehicul (kia / avensis)"
-        default: "kia"
-        selector:
-          select:
-            options:
-              - "kia"
-              - "avensis"
-      notes:
-        description: Observatii optionale
-        selector:
-          text:
-      date:
-        description: "Data (YYYY-MM-DD)"
-        selector:
-          date:
+    alias: "Inregistreaza cost vehicul"
+    description: "Adauga un cost pentru vehiculul selectat in categoria selectata"
     sequence:
-      - variables:
-          cost_date: "{{ date | default(now().strftime('%Y-%m-%d')) }}"
-          vehicle_prefix: "{{ vehicle | default('kia') }}"
-          cat_entity: >
-            {% set cats = ['spalare','detailing','anvelope','revizie','itp','rca','casco','rovinieta','incarcare','altele'] %}
-            {% if category in cats %}
-              input_number.cost_cat_{{ category }}
-            {% else %}
-              input_number.cost_cat_altele
+      - service: input_number.set_value
+        data_template:
+          entity_id: >
+            {% set v = states('input_select.vehicle_cost_vehicle') %}
+            {% set c = states('input_select.vehicle_cost_category') %}
+            {% if 'Kia' in v %}input_number.kia_cat_{{ c }}_month
+            {% elif 'Avensis' in v %}input_number.avensis_cat_{{ c }}_month
+            {% elif 'GSXR' in v or 'Suzuki' in v %}input_number.gsxr_cat_{{ c }}_month
+            {% else %}input_number.vehicle_costs_total_month
             {% endif %}
-
-      # ── Update vehicul specific ────────────────────────
-      - service: input_number.set_value
-        target:
-          entity_id: "input_number.{{ vehicle_prefix }}_costs_total_all"
-        data:
           value: >
-            {{ (states('input_number.' ~ vehicle_prefix ~ '_costs_total_all') | float(0) + amount | float) | round(2) }}
-
-      - service: input_number.set_value
-        target:
-          entity_id: "input_number.{{ vehicle_prefix }}_costs_total_year"
-        data:
-          value: >
-            {% if cost_date[:4] == now().year | string %}
-              {{ (states('input_number.' ~ vehicle_prefix ~ '_costs_total_year') | float(0) + amount | float) | round(2) }}
+            {% set v = states('input_select.vehicle_cost_vehicle') %}
+            {% set c = states('input_select.vehicle_cost_category') %}
+            {% set amount = states('input_number.vehicle_cost_amount') | float %}
+            {% if 'Kia' in v %}
+              {{ states('input_number.kia_cat_' ~ c ~ '_month') | float + amount }}
+            {% elif 'Avensis' in v %}
+              {{ states('input_number.avensis_cat_' ~ c ~ '_month') | float + amount }}
+            {% elif 'GSXR' in v or 'Suzuki' in v %}
+              {{ states('input_number.gsxr_cat_' ~ c ~ '_month') | float + amount }}
             {% else %}
-              {{ states('input_number.' ~ vehicle_prefix ~ '_costs_total_year') | float(0) }}
+              {{ states('input_number.vehicle_costs_total_month') | float + amount }}
             {% endif %}
-
-      - service: input_number.set_value
-        target:
-          entity_id: "input_number.{{ vehicle_prefix }}_costs_total_month"
-        data:
-          value: >
-            {% if cost_date[:7] == now().strftime('%Y-%m') %}
-              {{ (states('input_number.' ~ vehicle_prefix ~ '_costs_total_month') | float(0) + amount | float) | round(2) }}
-            {% else %}
-              {{ states('input_number.' ~ vehicle_prefix ~ '_costs_total_month') | float(0) }}
-            {% endif %}
-
-      # ── Update global ──────────────────────────────────
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.vehicle_costs_total_all
-        data:
-          value: >
-            {{ (states('input_number.vehicle_costs_total_all') | float(0) + amount | float) | round(2) }}
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.vehicle_costs_total_year
-        data:
-          value: >
-            {% if cost_date[:4] == now().year | string %}
-              {{ (states('input_number.vehicle_costs_total_year') | float(0) + amount | float) | round(2) }}
-            {% else %}
-              {{ states('input_number.vehicle_costs_total_year') | float(0) }}
-            {% endif %}
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.vehicle_costs_total_month
-        data:
-          value: >
-            {% if cost_date[:7] == now().strftime('%Y-%m') %}
-              {{ (states('input_number.vehicle_costs_total_month') | float(0) + amount | float) | round(2) }}
-            {% else %}
-              {{ states('input_number.vehicle_costs_total_month') | float(0) }}
-            {% endif %}
-
-      # ── Update categorie luna curenta ──────────────────
-      - service: input_number.set_value
-        target:
-          entity_id: "{{ cat_entity }}"
-        data:
-          value: >
-            {% if cost_date[:7] == now().strftime('%Y-%m') %}
-              {{ (states(cat_entity) | float(0) + amount | float) | round(2) }}
-            {% else %}
-              {{ states(cat_entity) | float(0) }}
-            {% endif %}
-
-      # ── Notificare ─────────────────────────────────────
-      - service: persistent_notification.create
-        data:
-          title: "Cost inregistrat!"
-          message: >
-            {{ vehicle_prefix | upper }} — {{ category | upper }}: {{ amount }} RON
-            {% if notes %} ({{ notes }}){% endif %}
-
-automation:
-  # ── Reset lunar ────────────────────────────────────────
-  - alias: "Vehicle Costs - Reset lunar"
-    trigger:
-      - platform: time
-        at: "00:01:00"
-    condition:
-      - condition: template
-        value_template: "{{ now().day == 1 }}"
-    action:
-      - service: input_number.set_value
-        target:
-          entity_id:
-            - input_number.vehicle_costs_total_month
-            - input_number.kia_costs_total_month
-            - input_number.avensis_costs_total_month
-            - input_number.cost_cat_spalare
-            - input_number.cost_cat_detailing
-            - input_number.cost_cat_anvelope
-            - input_number.cost_cat_revizie
-            - input_number.cost_cat_itp
-            - input_number.cost_cat_rca
-            - input_number.cost_cat_casco
-            - input_number.cost_cat_rovinieta
-            - input_number.cost_cat_incarcare
-            - input_number.cost_cat_altele
-        data:
-          value: 0
-    mode: single
-
-  # ── Reset anual ────────────────────────────────────────
-  - alias: "Vehicle Costs - Reset anual"
-    trigger:
-      - platform: time
-        at: "00:02:00"
-    condition:
-      - condition: template
-        value_template: "{{ now().day == 1 and now().month == 1 }}"
-    action:
-      - service: input_number.set_value
-        target:
-          entity_id:
-            - input_number.vehicle_costs_total_year
-            - input_number.kia_costs_total_year
-            - input_number.avensis_costs_total_year
-        data:
-          value: 0
-    mode: single
